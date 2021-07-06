@@ -1,55 +1,65 @@
-//I'm using underscores in the method names to signify that they're private (local) methods that won't be used outside of the class.
-//Two more small things - a getter and resetter of the input (new todo) value.
-//Model
-class Model {
-  constructor() {
-    // The state of the model, an array of todo objects, prepopulated with some data
-    this.todos = [
-      { id: 1, text: "Run a marathon", complete: false },
-      { id: 2, text: "Plant a garden", complete: false },
-    ];
-  }
-
-  addTodo(todoText) {
-    const todo = {
-      id: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1,
-      text: todoText,
-      complete: false,
-    };
-
-    this.todos.push(todo);
-  }
-
-  // Map through all todos, and replace the text of the todo with the specified id
-  editTodo(id, updatedText) {
-    this.todos = this.todos.map((todo) =>
-      todo.id === id
-        ? { id: todo.id, text: updatedText, complete: todo.complete }
-        : todo
-    );
-  }
-
-  // Filter a todo out of the array by id
-  deleteTodo(id) {
-    this.todos = this.todos.filter((todo) => todo.id !== id);
-  }
-
-  // Flip the complete boolean on the specified todo
-  toggleTodo(id) {
-    this.todos = this.todos.map((todo) =>
-      todo.id === id
-        ? { id: todo.id, text: todo.text, complete: !todo.complete }
-        : todo
-    );
-  }
-}
 
 /**
- * @class View
+ * @class Model
  *
- * Visual representation of the model.
+ * Manages the data of the application.
  */
-class View {
+class Model {
+    constructor() {
+      this.todos = JSON.parse(localStorage.getItem('todos')) || []
+    }
+  
+    bindTodoListChanged(callback) {
+      this.onTodoListChanged = callback
+    }
+  
+    _commit(todos) {
+      this.onTodoListChanged(todos)
+      localStorage.setItem('todos', JSON.stringify(todos))
+    }
+  
+    addTodo(todoText) {
+      const todo = {
+        id: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1,
+        text: todoText,
+        complete: false,
+      }
+  
+      this.todos.push(todo)
+  
+      this._commit(this.todos)
+    }
+  
+    editTodo(id, updatedText) {
+      this.todos = this.todos.map(todo =>
+        todo.id === id ? { id: todo.id, text: updatedText, complete: todo.complete } : todo
+      )
+  
+      this._commit(this.todos)
+    }
+  
+    deleteTodo(id) {
+      this.todos = this.todos.filter(todo => todo.id !== id)
+  
+      this._commit(this.todos)
+    }
+  
+    toggleTodo(id) {
+      this.todos = this.todos.map(todo =>
+        todo.id === id ? { id: todo.id, text: todo.text, complete: !todo.complete } : todo
+      )
+  
+      this._commit(this.todos)
+    }
+  }
+  
+  /**
+   * @class View
+   *
+   * Visual representation of the model.
+   *  * Dispatches the event it listens to, to the 
+   */
+  class View {
     constructor() {
       this.app = this.getElement('#root')
       this.form = this.createElement('form')
@@ -192,6 +202,7 @@ class View {
    * @class Controller
    *
    * Links the user input and the view output.
+   * this.onTodoListChanged displays initial todos
    *
    * @param model
    * @param view

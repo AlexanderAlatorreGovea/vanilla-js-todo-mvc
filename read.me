@@ -1,0 +1,35 @@
+Model - holds state,
+    1. prefix: add, edit, delete, toggle filter (i.e. addTodo)
+    2.  manipulates state directly. 
+
+View - hold view of the app 
+    1. holds event listeners, 
+    2. prefix: bind (i.e. bindAddTodo)
+    3. creates elements
+    4. resets inputs
+    5. query selectors
+
+Controller - Binds Model to View 
+    1. creates functions to dispatch actions
+    2. prefix: handle (i.e. handleAddTodo)
+
+Flowchart:
+    -User story description of the app's functionality from the user's perspective.
+    -Common format: as a (user) [type of user], I want (search for recipes) [an action] so that (I can find meals) [a benefit]
+
+    Story: 
+       1. As a User I wanto to create a list of todo items so that I can complete them later
+       2. As a User I wanto to mark items as completed so that I don't recreate a todo item 
+       3. As a User I want to be able to delete the items after I complete them.
+
+
+    -Base it on the state of the parent Model:
+            this.todos = [
+                {id: 1, text: 'Run a marathon', complete: false},
+                {id: 2, text: 'Plant a garden', complete: false},
+            ]
+
+    User adds todo then it is saved in data storage then it is rendered on to the screen.
+    Once rendered on the screen the user has 2 options:
+    1. User can mark as completed
+    2. User can delete
